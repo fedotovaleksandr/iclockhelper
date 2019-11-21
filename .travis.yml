@@ -9,7 +9,6 @@ matrix:
   include:
     - python: 3.7
       env: DISTRIB="ubuntu" TOX_PYTHON_VERSION="py37" COVERAGE="true"
-    - env: DISTRIB="conda" PYTHON_VERSION="3.7" COVERAGE="false"
 install:
   - pip install pipenv
   - pipenv install

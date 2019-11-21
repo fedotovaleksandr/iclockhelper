@@ -6,7 +6,6 @@ verify_ssl = true
 [dev-packages]
 pytest = "*"
 mypy = "*"
-pre-commit = "*"
 setuptools = "*"
 pytest-cov = "*"
 coverage = "*"
