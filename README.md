@@ -1,21 +1,19 @@
-============
-iclockhelper
-============
 
+### iclockhelper
+
+[![Build Status](https://travis-ci.org/fedotovaleksandr/iclockhelper.svg?branch=master)](https://travis-ci.org/fedotovaleksandr/iclockhelper)
 
 Helper library to parse income request from IClock ADMS(like ZKTeco)
 
 
-Install
-===========
-*  ::
+### Install
+```
+pip install iclockhelper
+```
 
-        pip install iclockhelper
 
-Usage
-===========
-* django example ::
-
+### Usage
+```
     from urllib.request import Request
     from django.core.handlers.wsgi import WSGIRequest
     from django.http import HttpResponse
@@ -54,11 +52,10 @@ Usage
             url=req.get_raw_uri(),
             data=req.body,
         )
+```
 
 
-
-Note
-====
+### Note
 
 This project has been set up using PyScaffold 3.2.3. For details and usage
 information on PyScaffold see https://pyscaffold.org/.
