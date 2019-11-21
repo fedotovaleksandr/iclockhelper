@@ -4,8 +4,6 @@
 
 sudo: false
 language: python
-virtualenv:
-  system_site_packages: false
 matrix:
   fast_finish: true
   include:
