@@ -6,10 +6,17 @@ verify_ssl = true
 [dev-packages]
 pytest = "*"
 mypy = "*"
-pytz = "*"
+pre-commit = "*"
+setuptools = "*"
+pytest-cov = "*"
+coverage = "*"
+coveralls = "*"
+flake8 = "*"
+pre-commit = "*"
 
 [packages]
 stringcase = "*"
+pytz = "*"
 
 [requires]
 python_version = "3.7"
