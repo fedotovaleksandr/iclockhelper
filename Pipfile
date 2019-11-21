@@ -12,10 +12,12 @@ coverage = "*"
 coveralls = "*"
 flake8 = "*"
 pre-commit = "*"
+tox = "*"
 
 [packages]
 stringcase = "*"
 pytz = "*"
+v = "*"
 
 [requires]
 python_version = "3.7"
