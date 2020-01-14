@@ -150,7 +150,7 @@ class User:
 
     @classmethod
     def from_str(cls, line: str) -> 'User':
-        flds = _build_operlog_fields(line)
+        flds = _build_dict(line)
         return _fill_da_from_mapping(
             cls,
             _user_fieds_map,
@@ -196,7 +196,7 @@ class Fingerprint:
 
     @classmethod
     def from_str(cls, line: str) -> 'Fingerprint':
-        flds = _build_operlog_fields(line)
+        flds = _build_dict(line)
         return _fill_da_from_mapping(
             cls,
             _fingerprint_fields_map,
@@ -297,21 +297,26 @@ class AttendancePhotoLog(ServerDatetimeMixin):
 
     @classmethod
     def from_request_pin(cls, req_pin: str, body: str) -> 'AttendancePhotoLog':
+        pin = ''
+        if not req_pin:  # pin not in req params
+            body_dict = _build_dict(body.split('CMD=')[0], '\n')
+            req_pin = body_dict.get('PIN', '')
+
         pin_split = req_pin.split('.')[0].split('-')  # type: typing.List[str]
         dt = pin_split[0]
-        pin = ''
         if len(pin_split) == 2:  # Success Picture
             pin = pin_split[1]
-        server_datetime = datetime.datetime.strptime(dt, '%Y-%m-%d %H:%M:%S')
+        server_datetime = datetime.datetime.strptime(dt, '%Y%m%d%H%M%S')
+
         image_data = ''
         is_uploadphoto = False
         is_realupload = False
 
         if 'CMD=uploadphoto' in body:
-            image_data = body.split('CMD=uploadphoto')[1][1:]
+            image_data = body.split('CMD=uploadphoto')[1]
             is_uploadphoto = True
         if 'CMD=realupload' in body:
-            image_data = body.split('CMD=realupload')[1][1:]
+            image_data = body.split('CMD=realupload')[1]
             is_realupload = True
 
         return cls(
@@ -324,9 +329,9 @@ class AttendancePhotoLog(ServerDatetimeMixin):
         )
 
 
-def _build_operlog_fields(ops_1: str) -> typing.Dict[str, typing.Any]:
+def _build_dict(ops_1: str, separator: str = '\t') -> typing.Dict[str, str]:
     flds = {}
-    for item in ops_1.split('\t'):
+    for item in ops_1.split(separator):
         index = item.find('=')
         if index > 0:
             flds[item[:index]] = item[index + 1:]

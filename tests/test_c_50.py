@@ -6,6 +6,7 @@ import dataclasses as da
 
 from iclockhelper.models import (
     AlarmEnum,
+    AttendancePhotoLog,
     Fingerprint,
     Operation,
     OperationEnum,
@@ -40,6 +41,17 @@ def _create_many_trans_body(transactions: typing.List[Transaction]) -> str:
             trans.reserved,
         ) for trans in
         transactions])
+
+
+def _create_photo_body(sn: str, photolog: AttendancePhotoLog) -> str:
+    return "PIN={:s}{:s}.jpg\nSN={:s}\nsize=<something>\nCMD={:s}{:s}".format(
+        photolog.server_datetime.strftime('%Y%m%d%H%M%S')
+        if photolog.server_datetime else "",
+        "-" + photolog.pin if photolog.pin else "",
+        sn,
+        "uploadphoto" if photolog.is_uploadphoto else "realupload",
+        photolog.data,
+    )
 
 
 def _create_many_user_body(users: typing.List[User]) -> str:
@@ -307,6 +319,36 @@ class ModelC50Test(unittest.TestCase):
                 expected,
                 actual,
             )
+
+    def test_fdata_attlog(self):
+        base_datetime = datetime.datetime(year=2000, month=1, day=1, hour=1, minute=1,
+                                          second=0)
+
+        photoatt = AttendancePhotoLog(
+            server_datetime=base_datetime,
+            pin='pin1',
+            is_uploadphoto=True,
+            data='data',
+            raw='',
+        )
+        body = _create_photo_body(_SN, photoatt)
+        req = self.req_builder.cdatarequest(
+            query={'table': TableEnum.attphoto.value, 'Stamp': '9999'},
+            body=body.encode('ascii'),
+        )
+        cdata_req = CdataRequest.from_req(req)
+        self.assertEqual(_SN, cdata_req.sn)
+        self.assertTrue(_STAMP, cdata_req.stamp)
+        self.assertTrue(TableEnum.attphoto, cdata_req.table)
+        self.assertIsNotNone(cdata_req.attendance_photo_log)
+        expected = da.asdict(photoatt)
+        actual = da.asdict(cdata_req.attendance_photo_log)
+        del expected['raw']
+        del actual['raw']
+        self.assertEqual(
+            expected,
+            actual,
+        )
 
     def test_getreq(self):
         req = self.req_builder.getrequest(
